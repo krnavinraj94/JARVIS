@@ -63,29 +63,59 @@ e.g. *"open whatsapp"*, *"call 9876543210"*, *"take a screenshot"*.
 Set `USE_WAKE_WORD = False` in `config.py` to skip the wake word and
 listen continuously instead.
 
-## Supported commands (examples)
+## Supported commands (English + Hindi)
 
-| Say | Action |
-|---|---|
-| "open camera" / "close camera" | launch / force-stop an app |
-| "call 9876543210" | dials the number |
-| "end call" | hangs up |
-| "text 9876543210 saying running late" | opens SMS compose pre-filled |
-| "take a screenshot" | saves a PNG to `./screenshots/` |
-| "volume up" / "volume down" / "mute" | media volume |
-| "next track" / "previous track" / "pause" | media playback |
-| "go home" / "go back" / "recent apps" | navigation keys |
-| "lock screen" / "wake up" | power key |
-| "type hello world" | types text into the focused field |
-| "search for nearest coffee shop" | opens a Google search in the browser |
-| "what is my battery" | reads battery percentage |
-| "exit" / "quit" / "stop" | shuts JARVIS down |
+| Say (English) | Say (Hindi) | Action |
+|---|---|---|
+| "open camera" | "कैमरा खोलो" | launch an app |
+| "close camera" | "कैमरा बंद करो" | force-stop an app |
+| "call 9876543210" | "9876543210 को कॉल करो" | dials the number |
+| "end call" / "hang up" | "कॉल काटो" | hangs up |
+| "text 9876543210 saying running late" | — | opens SMS compose pre-filled |
+| "take a screenshot" | "स्क्रीनशॉट लो" | saves a PNG to `./screenshots/` |
+| "volume up" | "आवाज़ बढ़ाओ" | raises media volume |
+| "volume down" | "आवाज़ कम करो" | lowers media volume |
+| "mute" | "म्यूट करो" | mutes |
+| "play" / "pause" / "play music" / "play a song" | "बजाओ" / "गाना" / "रोको" | toggles playback |
+| "next track" / "skip" | "अगला गाना" | next track |
+| "previous track" | "पिछला गाना" | previous track |
+| "go home" | "होम जाओ" | home button |
+| "go back" | "पीछे जाओ" | back button |
+| "recent apps" | "हाल के ऐप" | app switcher |
+| "lock screen" | "लॉक करो" | locks the screen |
+| "wake up" | "स्क्रीन जगाओ" | wakes the screen |
+| "type hello world" | — | types text into the focused field |
+| "search for nearest coffee shop" | "कॉफी शॉप खोजो" | opens a Google search |
+| "what is my battery" | "बैटरी" | reads battery percentage |
+| "check my storage" / "how much space" | "स्टोरेज" / "कितनी जगह" | reads storage used/total |
+| "switch to hindi" | "हिंदी में बदलो" | switches recognition language to Hindi |
+| "switch to english" | "अंग्रेज़ी में बदलो" | switches recognition language to English |
+| "exit" / "quit" / "stop" | "अलविदा" / "बंद हो जाओ" | shuts JARVIS down |
 
-Add more apps by editing `APP_PACKAGES` in `config.py`. Find a package
-name with:
-```bash
-adb shell pm list packages | grep <hint>
-```
+### Opening apps JARVIS doesn't already know about
+
+You are **not** limited to the apps in `config.py`. "Open \<app\>" first
+checks the curated `APP_PACKAGES` dict (fast, handles naming quirks —
+e.g. "phone" → the dialer package), then falls back to searching every
+package actually installed on your phone for a name match — so
+"open telegram", "open netflix", etc. work even if you never configured
+them, as long as the app's package name contains a recognizable form of
+what you said. Package list is fetched once per run and cached.
+
+For Hindi app names, spoken Devanagari has to be translated to the
+English key first (package names are always Latin script) — this uses
+`HINDI_APP_ALIASES` in `config.py`. It covers common apps out of the
+box; add more entries there if an app you use isn't recognized in Hindi.
+
+### Switching languages
+
+Google's free speech API needs one language per recognition call — it
+doesn't reliably auto-detect Hindi vs. English mid-sentence (it will
+"transcribe" the wrong language into garbage rather than fail cleanly).
+So JARVIS starts in whichever language `config.RECOGNITION_LANGUAGE` is
+set to (default `"en-IN"`), and you switch by voice with
+**"switch to hindi"** / **"हिंदी में बदलो"** — after that it listens in
+Hindi until you switch back.
 
 ## Known limitations / things to be aware of
 

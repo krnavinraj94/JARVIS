@@ -34,7 +34,7 @@ def main():
         print(f"[FATAL] Could not access microphone: {e}")
         sys.exit(1)
 
-    parser = CommandParser(adb, speak_fn=voice.speak)
+    parser = CommandParser(adb, speak_fn=voice.speak, set_language_fn=voice.set_language)
 
     voice.speak("JARVIS online.")
 

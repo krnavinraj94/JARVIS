@@ -103,6 +103,21 @@ class AdbController:
     def close_app(self, package_name):
         self.shell(f"am force-stop {package_name}")
 
+    def list_installed_packages(self, include_system=True):
+        """
+        Return every installed package name on the phone, e.g. ['com.whatsapp', ...].
+        include_system=False restricts to user-installed (third-party) apps only,
+        which is faster and usually what you want for voice "open X" matching.
+        """
+        flag = "" if include_system else "-3"
+        out = self.shell(f"pm list packages {flag}".strip())
+        packages = []
+        for line in out.splitlines():
+            line = line.strip()
+            if line.startswith("package:"):
+                packages.append(line[len("package:"):])
+        return packages
+
     # ------------------------------------------------------------------ #
     # Calls & messaging
     # ------------------------------------------------------------------ #

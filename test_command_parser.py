@@ -11,6 +11,11 @@ from command_parser import CommandParser
 class MockAdb:
     def __init__(self):
         self.calls = []
+        self._pkgs = ["com.whatsapp", "com.spotify.music", "org.telegram.messenger",
+                      "com.netflix.mediaclient", "com.truecaller"]
+
+    def list_installed_packages(self, include_system=True):
+        return self._pkgs
 
     def __getattr__(self, name):
         def recorder(*args, **kwargs):
@@ -19,6 +24,8 @@ class MockAdb:
                 return "screenshots/fake.png"
             if name == "battery_level":
                 return "77"
+            if name == "storage_info":
+                return ("58G", "112G", 52)
             return None
         return recorder
 
@@ -59,6 +66,15 @@ cases = [
     ("type hello world", "type_text"),
     ("search for nearest coffee shop", "web_search"),
     ("what is my battery", "battery_level"),
+    ("check my storage", "storage_info"),
+    ("please play d song", "play_pause"),          # previously failed with narrow matching
+    ("open telegram", "open_app"),                  # not in curated dict, dynamic package search
+    ("open netflix", "open_app"),
+    ("व्हाट्सएप खोलो", "open_app"),                  # Hindi: "whatsapp, open"
+    ("आवाज़ बढ़ाओ", "volume_up"),                    # Hindi: "increase volume"
+    ("स्क्रीनशॉट लो", "take_screenshot"),            # Hindi: "take screenshot"
+    ("बैटरी", "battery_level"),                      # Hindi: "battery"
+    ("स्टोरेज", "storage_info"),                     # Hindi: "storage"
 ]
 
 all_pass = True

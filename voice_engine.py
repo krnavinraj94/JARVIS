@@ -15,6 +15,7 @@ class VoiceEngine:
     def __init__(self):
         self.recognizer = sr.Recognizer()
         self.microphone = sr.Microphone(device_index=config.MIC_INDEX)
+        self.language = config.RECOGNITION_LANGUAGE  # current STT language, e.g. "en-IN" / "hi-IN"
 
         self.tts = pyttsx3.init()
         self.tts.setProperty("rate", config.TTS_RATE)
@@ -28,6 +29,10 @@ class VoiceEngine:
     @staticmethod
     def list_microphones():
         return sr.Microphone.list_microphone_names()
+
+    def set_language(self, language_code):
+        """Switch the active speech-recognition language, e.g. 'hi-IN' or 'en-IN'."""
+        self.language = language_code
 
     def speak(self, text):
         print(f"JARVIS: {text}")
@@ -51,7 +56,7 @@ class VoiceEngine:
                 return None
 
         try:
-            text = self.recognizer.recognize_google(audio)
+            text = self.recognizer.recognize_google(audio, language=self.language)
             return text.lower().strip()
         except sr.UnknownValueError:
             return None
