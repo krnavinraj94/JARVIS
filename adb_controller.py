@@ -206,3 +206,23 @@ class AdbController:
             if line.startswith("level:"):
                 return line.split(":")[1].strip()
         return None
+
+    def storage_info(self):
+        """
+        Returns (used_human, total_human, percent_used) for /sdcard (internal storage),
+        e.g. ("42G", "128G", 33). Returns None if it can't be parsed.
+        """
+        out = self.shell("df -h /sdcard")
+        lines = [l for l in out.splitlines() if l.strip()]
+        if len(lines) < 2:
+            return None
+        # Typical columns: Filesystem  Size  Used  Avail  Use%  Mounted on
+        parts = lines[1].split()
+        if len(parts) < 5:
+            return None
+        total, used, _avail, use_pct = parts[1], parts[2], parts[3], parts[4]
+        try:
+            percent = int(use_pct.strip("%"))
+        except ValueError:
+            percent = None
+        return used, total, percent

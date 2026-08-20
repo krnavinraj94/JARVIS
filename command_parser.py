@@ -149,6 +149,19 @@ class CommandParser:
                     self.speak("Couldn't read battery level.")
                 return True
 
+            # ---- storage ----
+            if "storage" in text or "how much space" in text:
+                info = self.adb.storage_info()
+                if info is not None:
+                    used, total, percent = info
+                    if percent is not None:
+                        self.speak(f"You've used {used} of {total}, that's {percent} percent full.")
+                    else:
+                        self.speak(f"You've used {used} of {total}.")
+                else:
+                    self.speak("Couldn't read storage info.")
+                return True
+
             # ---- fallback ----
             self.speak("Sorry, I didn't understand that command.")
             return True
