@@ -11,8 +11,7 @@ ADB_DEVICE_SERIAL = None
 
 # Path to the adb binary. "adb" works if it's on PATH; otherwise give
 # the full path, e.g. r"C:\platform-tools\adb.exe"
-ADB_PATH = "adb"
-
+ADB_PATH = r"C:\Users\DELL\OneDrive\Pictures\platform-tools-latest-windows\platform-tools\adb.exe"
 # ---- Voice ----
 WAKE_WORD = "jarvis"          # say "jarvis, open camera"
 USE_WAKE_WORD = True          # False = listen for commands continuously, no wake word
